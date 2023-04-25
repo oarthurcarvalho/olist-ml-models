@@ -51,7 +51,7 @@ tb_min_max as (
     FROM tb_pedido_summary
 
     GROUP BY idVendedor
-)
+),
 
 tb_life as (
     SELECT 
@@ -68,4 +68,53 @@ tb_life as (
         AND t2.idVendedor IS NOT NULL
 
     GROUP BY t2.idVendedor
+),
+
+tb_dtpedido as (
+
+    SELECT 
+        DISTINCT idVendedor,
+        DATE(dtPedido) as dtPedido
+
+    FROM tb_pedido_item
+
+    ORDER BY 1, 2
+),
+
+tb_lag as (
+    SELECT 
+        *,
+        LAG(dtPedido) OVER (PARTITION BY idVendedor ORDER BY dtPedido) AS lag1
+
+    FROM tb_dtpedido
+),
+
+tb_intervalo as (
+    SELECT
+        idVendedor,
+        AVG(JULIANDAY(dtPedido) - JULIANDAY(lag1)) as avgIntervaloVendas
+
+    FROM tb_lag
+
+    GROUP BY idVendedor
 )
+
+SELECT
+    '2018-01-01' as dtReferencia,
+    t1.*,
+    t2.minvlPedido,
+    t2.maxvlPedido,
+    t3.LTV,
+    t3.qtdeDiasBase,
+    t4.avgIntervaloVendas
+
+FROM tb_summary as t1
+
+LEFT JOIN tb_min_max as t2
+    ON t1.idVendedor = t2.idVendedor
+
+LEFT JOIN tb_life as t3
+    ON t1.idVendedor = t3.idVendedor
+
+LEFT JOIN tb_intervalo as t4
+    ON t1.idVendedor = t4.idVendedor
