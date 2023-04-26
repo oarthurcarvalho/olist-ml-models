@@ -1,4 +1,7 @@
-WITH tb_join as (
+CREATE TABLE fs_vendedor_produto AS
+
+WITH tb_join AS (
+
     SELECT DISTINCT
             t2.idVendedor,
             t3.*

@@ -1,3 +1,5 @@
+CREATE TABLE fs_vendedor_avaliacao AS
+
 WITH tb_pedido as (
 
     SELECT DISTINCT

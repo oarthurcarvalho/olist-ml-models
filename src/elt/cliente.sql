@@ -1,3 +1,5 @@
+CREATE TABLE fs_vendedor_cliente AS
+
 WITH tb_join AS (
 
     SELECT DISTINCT
