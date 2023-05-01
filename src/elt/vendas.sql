@@ -1,3 +1,5 @@
+-- DROP TABLE IF EXISTS fs_vendedor_vendas;
+
 CREATE TABLE fs_vendedor_vendas AS
 
 WITH tb_pedido_item AS (
@@ -11,8 +13,8 @@ WITH tb_pedido_item AS (
     LEFT JOIN item_pedido as t2
         on t1.idPedido = t2.idPedido
 
-    WHERE t1.dtPedido < '2018-01-01'
-        AND t1.dtPedido >= DATE('2018-01-01', '-6 months')
+    WHERE t1.dtPedido < '{date}'
+        AND t1.dtPedido >= DATE('{date}', '-6 months')
         AND t2.idVendedor is NOT NULL
 ),
 
@@ -22,7 +24,7 @@ tb_summary as (
         COUNT(DISTINCT idPedido) as qtdePedidos,
         COUNT(DISTINCT DATE(dtPedido)) as qtdeDias,
         COUNT(idProduto) as qtdeItens,
-        MIN(JULIANDAY('2018-01-01') - JULIANDAY(dtPedido)) as qtdeRecencia,
+        MIN(JULIANDAY('{date}') - JULIANDAY(dtPedido)) as qtdeRecencia,
         SUM(vlPreco) / COUNT(DISTINCT idPedido) as avgTicker,
         AVG(vlPreco) as avgValorProduto,
         MAX(vlPreco) as maxValorProduto,
@@ -60,14 +62,14 @@ tb_life as (
     SELECT 
         t2.idVendedor,
         SUM(vlPreco) as LTV,
-        MAX(JULIANDAY('2018-01-01') - JULIANDAY(dtPedido)) as qtdeDiasBase
+        MAX(JULIANDAY('{date}') - JULIANDAY(dtPedido)) as qtdeDiasBase
 
     FROM pedido as t1
 
     LEFT JOIN item_pedido as t2
         ON t1.idPedido = t2.idPedido
 
-    WHERE t1.dtPedido < '2018-01-01'
+    WHERE t1.dtPedido < '{date}'
         AND t2.idVendedor IS NOT NULL
 
     GROUP BY t2.idVendedor
@@ -103,7 +105,7 @@ tb_intervalo as (
 )
 
 SELECT
-    '2018-01-01' as dtReferencia,
+    '{date}' as dtReferencia,
     t1.*,
     t2.minvlPedido,
     t2.maxvlPedido,
