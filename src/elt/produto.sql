@@ -1,5 +1,3 @@
-CREATE TABLE fs_vendedor_produto AS
-
 WITH tb_join AS (
 
     SELECT DISTINCT
@@ -14,8 +12,8 @@ WITH tb_join AS (
     LEFT JOIN produto as t3
         ON t2.idProduto = t3.idProduto
 
-    WHERE t1.dtPedido < '2018-01-01'
-        AND t1.dtPedido >= DATE('2018-01-01', '-6 months')
+    WHERE t1.dtPedido < '{date}'
+        AND t1.dtPedido >= DATE('{date}', '-6 months')
         AND t2.idVendedor is NOT NULL
 ),
 
@@ -79,7 +77,8 @@ tb_summary as (
 )
 
 SELECT
-    '2018-01-01' as dtReferencia,
+    '{date}' as dtReferencia,
+    DATE('now') as dtIngestao,
     *
 
 FROM tb_summary

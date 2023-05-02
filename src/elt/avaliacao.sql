@@ -1,5 +1,3 @@
-CREATE TABLE fs_vendedor_avaliacao AS
-
 WITH tb_pedido as (
 
     SELECT DISTINCT
@@ -11,8 +9,8 @@ WITH tb_pedido as (
     LEFT JOIN item_pedido as t2
         ON t1.idPedido = t2.idPedido
 
-    WHERE t1.dtPedido < '2018-01-01'
-        AND t1.dtPedido >= DATE('2018-01-01', '-6 months')
+    WHERE t1.dtPedido < '{date}'
+        AND t1.dtPedido >= DATE('{date}', '-6 months')
         AND t2.idVendedor is NOT NULL
 ),
 
@@ -40,7 +38,8 @@ tb_summary as (
     GROUP BY idVendedor
 )
 
-SELECT '2018-01-01' as dtReferencia,
+SELECT '{date}' as dtReferencia,
+        DATE('now') as dtIngestao,
         *
 
 FROM tb_summary

@@ -47,8 +47,3 @@ def date_range(dt_start, dt_stop, period='daily'):
 
 # print(table_name, table_exists(database, table_name))
 # print(date_start, ' ~ ', date_stop)
-
-spark.sql("USE olist.db")
-
-# execute um comando SQL para ver as tabelas no banco de dados
-spark.sql("SHOW TABLES").show()

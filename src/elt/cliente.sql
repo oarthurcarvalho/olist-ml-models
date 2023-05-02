@@ -1,5 +1,3 @@
-CREATE TABLE fs_vendedor_cliente AS
-
 WITH tb_join AS (
 
     SELECT DISTINCT
@@ -16,8 +14,8 @@ WITH tb_join AS (
     LEFT JOIN cliente as t3
         ON t1.idCliente = t3.idCliente
 
-    WHERE t1.dtPedido < '2018-01-01'
-        AND t1.dtPedido >= DATE('2018-01-01', '-6 months')
+    WHERE t1.dtPedido < '{date}'
+        AND t1.dtPedido >= DATE('{date}', '-6 months')
         AND t2.idVendedor is NOT NULL
 
 ),
@@ -64,7 +62,8 @@ tb_group AS (
 )
 
 SELECT 
-    '2018-01-01' AS dtReferencia,
+    '{date}' AS dtReferencia,
+    DATE('now') as dtIngestao,
     *
 
 FROM tb_group
