@@ -1,54 +1,171 @@
--- CREATE TABLE tb_pedido as 
-WITH tb_activate as (
-    SELECT
-        idVendedor,
-        MIN(DATE(dtPedido)) as dtAtivacao
-        
-    FROM pedido as t1
+DROP TABLE IF EXISTS abt_olist_churn;
 
-    LEFT JOIN item_pedido as t2
-        ON t1.idPedido = t2.idPedido
+CREATE TABLE abt_olist_churn AS
 
-    WHERE dtPedido >= '2018-01-01'
-        AND dtPedido <= DATE('2018-01-01', '45 days')
-        AND idVendedor IS NOT NULL
+WITH tb_features AS (
+    SELECT 
+          t1.dtReferencia,
+          t1.idVendedor,
+          t1.qtdePedidos,
+          t1.qtdeDias,
+          t1.qtdeItens,
+          t1.qtdeRecencia,
+          t1.avgTicket,
+          t1.avgValorProduto,
+          t1.maxValorProduto,
+          t1.minValorProduto,
+          t1.avgProdutoPedido,
+          t1.minVlPedido,
+          t1.maxVlPedido,
+          t1.LTV,
 
-    GROUP BY idVendedor
-)
+          t1.qtdeDiasBase,
+          t1.avgIntervaloVendas,
+          t2.avgNota,
+          t2.minNota,
+          t2.maxNota,
 
-SELECT 
-    t1.*,
-    t2.*,
-    t3.*,
-    t4.*,
-    t5.*,
-    t6.*,
-    CASE WHEN t7.idVendedor IS NULL THEN 1 ELSE 0 END AS flChurn
+          t2.pctAvaliacao,
+          t3.qtdeUFsPedidos,
+          t3.pctPedidoAC,
+          t3.pctPedidoAL,
+          t3.pctPedidoAM,
+          t3.pctPedidoAP,
+          t3.pctPedidoBA,
+          t3.pctPedidoCE,
+          t3.pctPedidoDF,
+          t3.pctPedidoES,
+          t3.pctPedidoGO,
+          t3.pctPedidoMA,
+          t3.pctPedidoMG,
+          t3.pctPedidoMS,
+          t3.pctPedidoMT,
+          t3.pctPedidoPA,
+          t3.pctPedidoPB,
+          t3.pctPedidoPE,
+          t3.pctPedidoPI,
+          t3.pctPedidoPR,
+          t3.pctPedidoRJ,
+          t3.pctPedidoRN,
+          t3.pctPedidoRO,
+          t3.pctPedidoRR,
+          t3.pctPedidoRS,
+          t3.pctPedidoSC,
+          t3.pctPedidoSE,
+          t3.pctPedidoSP,
+          t3.pctPedidoTO,
 
-FROM fs_vendedor_vendas AS t1
+          t4.pctPedidoAtraso,
+          t4.pctPedidoCancelado,
+          t4.avgFrete,
+          t4.maxFrete,
+          t4.minFrete,
+          t4.qtdeDiasAprovadoEntrega,
+          t4.qtdeDiasPedidoEntrega,
+          t4.qtdeDiasEntregaPromessa,
 
-LEFT JOIN fs_vendedor_avaliacao as t2
+          t5.qtde_boleto_pedido,
+          t5.qtde_credit_card_pedido,
+          t5.qtde_voucher_pedido,
+          t5.qtde_debit_card_pedido,
+          t5.valor_boleto_pedido,
+          t5.valor_credit_card_pedido,
+          t5.valor_voucher_pedido,
+          t5.valor_debit_card_pedido,
+          t5.pct_qtde_boleto_pedido,
+          t5.pct_qtde_credit_card_pedido,
+          t5.pct_qtde_voucher_pedido,
+          t5.pct_qtde_debit_card_pedido,
+          t5.pct_valor_boleto_pedido,
+          t5.pct_valor_credit_card_pedido,
+          t5.pct_valor_voucher_pedido,
+          t5.pct_valor_debit_card_pedido,
+          t5.avgQtdeParcelas,
+          t5.maxQtdeParcelas,
+          t5.minQtdeParcelas,
+          t6.avgFotos,
+          t6.avgVolumeProduto,
+          t6.minVolumeProduto,
+          t6.maxVolumeProduto,
+          t6.pctCategoriacama_mesa_banho,
+          t6.pctCategoriabeleza_saude,
+          t6.pctCategoriaesporte_lazer,
+          t6.pctCategoriainformatica_acessorios,
+          t6.pctCategoriamoveis_decoracao,
+          t6.pctCategoriautilidades_domesticas,
+          t6.pctCategoriarelogios_presentes,
+          t6.pctCategoriatelefonia,
+          t6.pctCategoriaautomotivo,
+          t6.pctCategoriabrinquedos,
+          t6.pctCategoriacool_stuff,
+          t6.pctCategoriaferramentas_jardim,
+          t6.pctCategoriaperfumaria,
+          t6.pctCategoriabebes,
+          t6.pctCategoriaeletronicos
+
+    FROM fs_vendedor_vendas AS t1
+
+    LEFT JOIN fs_vendedor_avaliacao AS t2
     ON t1.idVendedor = t2.idVendedor
     AND t1.dtReferencia = t2.dtReferencia
 
-LEFT JOIN fs_vendedor_cliente as t3
+    LEFT JOIN fs_vendedor_cliente AS t3
     ON t1.idVendedor = t3.idVendedor
     AND t1.dtReferencia = t3.dtReferencia
 
-LEFT JOIN fs_vendedor_entrega as t4
+    LEFT JOIN fs_vendedor_entrega AS t4
     ON t1.idVendedor = t4.idVendedor
     AND t1.dtReferencia = t4.dtReferencia
 
-LEFT JOIN fs_vendedor_pagamentos as t5
+    LEFT JOIN fs_vendedor_pagamentos AS t5
     ON t1.idVendedor = t5.idVendedor
     AND t1.dtReferencia = t5.dtReferencia
 
-LEFT JOIN fs_vendedor_produto as t6
+    LEFT JOIN fs_vendedor_produto AS t6
     ON t1.idVendedor = t6.idVendedor
     AND t1.dtReferencia = t6.dtReferencia
 
-LEFT JOIN tb_activate AS t7
-    ON t1.idVendedor = t7.idVendedor
-    AND JULIANDAY(t7.dtAtivacao) - JULIANDAY(t1.dtReferencia) + t1.qtdeRecencia <= 45
+    WHERE t1.qtdeRecencia <= 45
+    AND  strftime('%d', t1.dtReferencia) = '01'
 
-WHERE t1.qtdeRecencia <= 45
+),
+
+tb_event AS (
+  SELECT distinct idVendedor,
+         date(dtPedido) as dtPedido
+
+  FROM item_pedido AS t1
+
+  LEFT JOIN pedido AS t2
+  ON t1.idPedido = t2.idPedido
+
+  WHERE idVendedor is not null
+),
+
+tb_flag AS (
+
+  SELECT t1.dtReferencia,
+        t1.idVendedor,
+        min(t2.dtPedido) as dtProxPedido
+
+  FROM tb_features AS t1
+
+  LEFT JOIN tb_event AS t2
+  ON t1.idVendedor = t2.idVendedor
+  AND t1.dtReferencia <= t2.dtPedido
+  AND julianday(dtPedido) - julianday(dtReferencia) <= 45 - qtdeRecencia
+
+  GROUP BY 1,2
+
+)
+
+SELECT t1.*,
+       CASE WHEN dtProxPedido IS NULL THEN 1 ELSE 0 END AS flChurn
+
+FROM tb_features AS t1
+
+LEFT JOIN tb_flag AS t2
+ON t1.idVendedor = t2.idVendedor
+AND t1.dtReferencia = t2.dtReferencia
+
+ORDER BY t1.idVendedor, t1.dtReferencia;

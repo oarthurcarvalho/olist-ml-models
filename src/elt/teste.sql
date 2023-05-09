@@ -1,0 +1,1 @@
+select count(*) from abt_olist_churn;
