@@ -23,7 +23,6 @@ tb_summary as (
   SELECT idVendedor,
          avg(coalesce(nrFotos,0)) as avgFotos,
          avg(vlComprimentoCm * vlAlturaCm * vlLarguraCm) as avgVolumeProduto,
-        --  percentile(vlComprimentoCm * vlAlturaCm * vlLarguraCm, 0.5) as medianVolumeProduto,
          min(vlComprimentoCm * vlAlturaCm * vlLarguraCm) as minVolumeProduto,
          max(vlComprimentoCm * vlAlturaCm * vlLarguraCm) as maxVolumeProduto,
          

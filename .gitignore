@@ -1,6 +1,7 @@
 # Ignore todos os arquivos de texto:
 *.txt
-.db
+*.db
+*.pkl
 
 # Ignore as pastas:
 venv/
