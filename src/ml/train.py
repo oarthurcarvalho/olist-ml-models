@@ -2,7 +2,6 @@ import os
 
 import lightgbm
 import pandas as pd
-import scikitplot as skplt
 import sqlalchemy
 from feature_engine import imputation
 from sklearn import metrics, pipeline
